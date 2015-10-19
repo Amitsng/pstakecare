@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PSTakeCare</title>
+    </head>
+    <body ng-app="pstakecare" ng-controller="HospitalController">
+
+        <h1>PSTakeCare </h1>
+        
+        <!-- get the data attached in scope -->
+        <div ng-repeat="timing in timings">
+            
+        <div>{{timing.slot }} 
+        
+        <span ng-if="timing.except">
+            except
+        {{ (timing.except)}}
+        </span>
+        
+        
+        </div>
+        </div>
+
+    </body>
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="app.js"></script>
+    <script src="/components/TimingFactory.js"></script>
+    <script src="/HospitalController.js"></script>
+</html>
