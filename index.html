@@ -8,11 +8,10 @@
 
         <h1>PSTakeCare </h1>
         
-        <!-- get the data attached in scope -->
+        <!-- get the data attached to scope -->
         <div ng-repeat="timing in timings">
             
-        <div>{{timing.slot }} 
-        
+        <div>{{timing.slot  }} 
         <span ng-if="timing.except">
             except
         {{ (timing.except)}}
