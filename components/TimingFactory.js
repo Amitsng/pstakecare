@@ -2,10 +2,8 @@ angular
   .module('pstakecare')
   .factory('TimingFactory', function($http) {
 
-    // Method that returns the cribs data
+    // Method that returns the timing data
     function getTimings() {
-      // We're now using $http to get the
-      // data from a separate file
       return $http.get('/timings.json');
     }
 

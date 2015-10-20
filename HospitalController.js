@@ -2,12 +2,25 @@ angular
   .module('pstakecare')
   .controller('HospitalController', function($scope, TimingFactory) {
     $scope.timings;
-    //function to convert time from 24 hour format to 12 hour format
-    function fomartTimeShow(time1) {
-      var time = time1.toString();
+    
+    /** function to convert time from 24 hour format to 12 hour format
+     * 
+     * @param time24Format time in 24 hpur format
+     * @return time in 12 hour format
+     * 
+     * 
+     * */
+    
+    function convert24hourTimeFormatTo12hour(time24Format){
+      
+      var time = time24Format.toString();
+      
       //handles the time with length 3 ( 930,615)
+      
       if (time.length == 3) {
+        
         //prepends 0 to convert time to 4 digit format
+        
         var hours = 0 + time[0];
         var min = time[1] + time[2];
       }
@@ -23,10 +36,38 @@ angular
         hours = (hours.length < 10) ? '0' + hours : hours;
         return hours + ':' + min + ' PM';
       }
+  
+      
     }
-
-    //Service to get timings per hospital
+    
+     /** function getSlot gets the slot of hospital
+     * 
+     * @param fromTime start time, toTime end time
+     * @return slot 
+     * 
+     * 
+     * */
+    
+    function getSlot(fromTime,toTime) {
+      
+      var slot;
+      if (fromTime == 0 && toTime == 2359) {
+         slot = "24x7";  
+      } else {
+        var fromTime12hoursformat = convert24hourTimeFormatTo12hour(fromTime);
+        var toTime12hoursformat   = convert24hourTimeFormatTo12hour(toTime);
+        slot = fromTime12hoursformat + " to " + toTime12hoursformat;  
+      }
+      return slot;
+      
+    }
+    
+    /**
+     * getTimings service reads json and get the hospsital slots
+     * 
+     * */
     TimingFactory.getTimings().success(function(data) {
+      
       var timings = data.timing;
       var days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
       var Fulldays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -44,6 +85,7 @@ angular
           //handles the case when the hospital remains closed
           if ((dayTiming.length) == 0) {
             if (typeof(hospitalTimings[t].except) === "undefined") {
+              //stores the day when the hospital remains closed
               hospitalTimings[t].except = fday;
             }
             else {
@@ -56,24 +98,16 @@ angular
             if (typeof(hospitalTimings[t].slot) === "undefined") {
               for (var k = 0; k < dayTiming.length; k++) {
                 if (typeof(hospitalTimings[t].slot) === "undefined") {
-                  //hospital opened 24x7
-                  if (dayTiming[k]['from'] == 0 && dayTiming[k]['to'] == 2359) {
-                    hospitalTimings[t].slot = "24x7";
-                  }
-                  else {
-                    hospitalTimings[t].slot = fomartTimeShow(dayTiming[k]['from']) + " to " + fomartTimeShow(dayTiming[k]['to']);
-                    //hospitalTimings[t].slot = (dayTiming[k]['from']) + " to " + (dayTiming[k]['to']);
-                  }
+                    hospitalTimings[t].slot = getSlot(dayTiming[k]['from'],dayTiming[k]['to']);
                 }
                 else {
-                  hospitalTimings[t].slot = hospitalTimings[t].slot + "," + fomartTimeShow(dayTiming[k]['from']) + " to " + fomartTimeShow(dayTiming[k]['to']);
-                 // hospitalTimings[t].slot = hospitalTimings[t].slot + "," + (dayTiming[k]['from']) + " to " + (dayTiming[k]['to']);
+                    hospitalTimings[t].slot += getSlot(dayTiming[k]['from'],dayTiming[k]['to']);
                 }
 
               } //for
             }
             else {
-              // assumes same timing for all days
+              // assumes same timing for all days (to avoid repetition of timing)
               continue;
 
             }
