@@ -37,8 +37,7 @@ angular
         return hours + ':' + min + ' PM';
       }
   
-      
-    }
+      }
     
      /** function getSlot gets the slot of hospital
      * 
@@ -51,7 +50,7 @@ angular
     function getSlot(fromTime,toTime) {
       
       var slot;
-      if (fromTime == 0 && toTime == 2359) {
+      if ((fromTime == 0 || fromTime == 00 || fromTime == 0000) && toTime == 2359) {
          slot = "24x7";  
       } else {
         var fromTime12hoursformat = convert24hourTimeFormatTo12hour(fromTime);
